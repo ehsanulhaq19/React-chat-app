@@ -1,12 +1,17 @@
+
 const express = require('express');
 
 const app = express();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 
+const {initDB, initRooms, createOrJoinRoom, createMessage} = require('./dbConnection')
+
 app.use(express.json());
 
-const rooms = new Map();
+initDB()
+
+const rooms = initRooms();
 
 app.get('/rooms/:id', (req, res) => {
   const { id: roomId } = req.params;
@@ -21,6 +26,8 @@ app.get('/rooms/:id', (req, res) => {
 
 app.post('/rooms', (req, res) => {
   const { roomId, userName } = req.body;
+  //create entry in db
+  createOrJoinRoom(roomId, userName)
   if (!rooms.has(roomId)) {
     rooms.set(
       roomId,
@@ -46,6 +53,7 @@ io.on('connection', (socket) => {
       userName,
       text,
     };
+    createMessage(roomId, userName, text)
     rooms.get(roomId).get('messages').push(obj);
     socket.to(roomId).broadcast.emit('ROOM:NEW_MESSAGE', obj);
   });
@@ -58,7 +66,6 @@ io.on('connection', (socket) => {
       }
     });
   });
-console.log("rooms = ", rooms)
   console.log('user connected', socket.id);
 });
 

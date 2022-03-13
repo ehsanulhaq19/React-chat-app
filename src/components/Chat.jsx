@@ -4,7 +4,8 @@ import socket from '../socket';
 function Chat({ users, messages, userName, roomId, onAddMessage }) {
   const [messageValue, setMessageValue] = React.useState('');
   const messagesRef = React.useRef(null);
-
+  const totalUsers = [...new Set(messages.map(message => message.userName))].length
+  
   const onSendMessage = () => {
     socket.emit('ROOM:NEW_MESSAGE', {
       userName,
@@ -24,7 +25,8 @@ function Chat({ users, messages, userName, roomId, onAddMessage }) {
       <div className="chat-users">
         Room ID: <b>{roomId}</b>
         <hr />
-        <b>Users count ({users.length}):</b>
+        <b>Total users ({totalUsers}):</b><br/>
+        <b>Online users ({users.length}):</b>
         <ul>
           {users.map((name, index) => (
             <li key={name + index}>{name}</li>

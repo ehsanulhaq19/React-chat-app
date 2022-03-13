@@ -76,6 +76,7 @@ body, .root, .wrapper{
   justify-content: space-between;
   flex: 1;
   padding: 30px;
+  background: #f5f3f2;
 }
 
 .messages {
