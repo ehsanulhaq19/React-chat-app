@@ -5,13 +5,11 @@ const app = express();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 
-const {initDB, initRooms, createOrJoinRoom, createMessage} = require('./dbConnection')
+const {initDB, initRooms, createOrJoinRoom, createMessage} = require('./backend/dbConnection')
 
 app.use(express.json());
 
-initDB()
-
-const rooms = initRooms();
+let rooms = new Map()
 
 app.get('/rooms/:id', (req, res) => {
   const { id: roomId } = req.params;
@@ -73,5 +71,12 @@ server.listen(9999, (err) => {
   if (err) {
     throw Error(err);
   }
+
+  initDB()
+  
+  setTimeout(() => {
+    rooms = initRooms();
+  }, 3000);
+
   console.log('Server Started!');
 });
